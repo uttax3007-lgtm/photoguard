@@ -1,104 +1,126 @@
-# Raising the Cost of Malicious AI-Powered Image Editing
+# PhotoGuard
 
-This repository contains the code for our recent work on safe-guarding images against manipulation by ML-powerd photo-editing models such as [stable diffusion](https://stability.ai/blog/stable-diffusion-public-release).
+Research code for protecting images against certain forms of malicious AI-powered editing.
 
-**Raising the Cost of Malicious AI-Powered Image Editing** <br>
-_Hadi Salman\*, Alaa Khaddaj\*, Guillaume Leclerc\*, Andrew Ilyas, Aleksander Madry_ <br>
-**Paper:** https://arxiv.org/abs/2302.06588 <br>
-**Blog post:** https://gradientscience.org/photoguard <br>
-**Interactive demo:** https://huggingface.co/spaces/hadisalman/photoguard (check [below](#new-interactive-demo) for how to run it locally) <br>
+This repository is a personal fork of the PhotoGuard research project from MadryLab. It keeps the original research implementation and attribution intact, with repository documentation and maintenance notes adapted for this fork.
+
+**Maintainer:** Utkarsh Jadhav  
+**GitHub:** [@uttax3007-lgtm](https://github.com/uttax3007-lgtm)  
+**Upstream project:** [MadryLab/photoguard](https://github.com/MadryLab/photoguard)
+
+> This is a research implementation, not a guarantee that an image cannot be edited or manipulated. Results depend on the model, pipeline, settings, and image being tested.
+
+## About the research
+
+PhotoGuard explores image-protection techniques intended to make unauthorized AI-powered edits more difficult. The original work studies attacks against image-editing pipelines based on diffusion models, including image-to-image and inpainting workflows.
+
+The implementation and research are based on:
+
+**Raising the Cost of Malicious AI-Powered Image Editing**  
+Hadi Salman*, Alaa Khaddaj*, Guillaume Leclerc*, Andrew Ilyas, Aleksander Madry
+
+- Paper: https://arxiv.org/abs/2302.06588
+- Research write-up: https://gradientscience.org/photoguard/
+- Original repository: https://github.com/MadryLab/photoguard
+- Hosted demo: https://huggingface.co/spaces/hadisalman/photoguard
+
+Please cite the paper when using the research in academic work:
 
 ```bibtex
-    @article{salman2023raising,
-      title={Raising the Cost of Malicious AI-Powered Image Editing},
-      author={Salman, Hadi and Khaddaj, Alaa and Leclerc, Guillaume and Ilyas, Andrew and Madry, Aleksander},
-      journal={arXiv preprint arXiv:2302.06588},
-      year={2023}
-    }
+@article{salman2023raising,
+  title={Raising the Cost of Malicious AI-Powered Image Editing},
+  author={Salman, Hadi and Khaddaj, Alaa and Leclerc, Guillaume and Ilyas, Andrew and Madry, Aleksander},
+  journal={arXiv preprint arXiv:2302.06588},
+  year={2023}
+}
 ```
-
-<p>
-<kbd>
-<img src="assets/hero_fig.PNG" width="1000" >
-</kbd>
-</p>
 
 ## Getting started
 
-Our code relies on the [stable diffusion code on Hugging Face](https://github.com/huggingface/diffusers).
+### Requirements
 
-1.  Clone our repo: `git clone https://github.com/madrylab/photoguard.git`
+The original implementation uses Python and the Hugging Face Diffusers ecosystem. Model execution may require a compatible GPU and a correctly installed PyTorch build.
 
-2.  Install dependencies:
+The dependency versions in this repository reflect the research code and may need adjustment for newer Python, CUDA, PyTorch, or Diffusers releases.
 
-    ```
-      conda create -n photoguard python=3.10
-      conda activate photoguard
-      pip install -r requirements.txt
-      huggingface-cli login
-    ```
+### Installation
 
-3.  You should now be all set! Check out our notebooks!
+1. Clone this fork:
 
-## [New] Interactive demo
+   ```bash
+   git clone https://github.com/uttax3007-lgtm/photoguard.git
+   cd photoguard
+   ```
 
-We created an interactive demo using [gradio](https://gradio.app/), and we are hosting it on [this HuggingFace space](https://huggingface.co/spaces/hadisalman/photoguard).
+2. Create and activate an environment:
 
-[![image alt text](assets/demo_screenshot.png)](https://www.youtube.com/watch?v=aTC59Q6ZDNM)
+   ```bash
+   conda create -n photoguard python=3.10
+   conda activate photoguard
+   ```
 
-However, for faster inference, you can run the demo locally on your machine! Simply do this:
+3. Install the project dependencies:
 
-```
+   ```bash
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+4. If a workflow downloads gated or authenticated Hugging Face models, configure your Hugging Face account and authenticate using the CLI supported by your installed Hugging Face Hub version.
+
+## Running the interactive demo
+
+The Gradio application is located in the `demo/` directory.
+
+```bash
 conda activate photoguard
 cd demo
 python app.py
 ```
 
-## Generating high-quality fake images
+The hosted research demo is also available on [Hugging Face Spaces](https://huggingface.co/spaces/hadisalman/photoguard). For reproducible experiments, prefer running the code locally with documented model and dependency versions.
 
-The first step is we will walk you through how you can generate high quality fake images. Check out this notebook! The result will be such images:
+## Research workflows
 
-See [this notebook](notebooks/generating_fake_images.ipynb)!
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1pwfeSe6MUjD7UfqdWxurMSWWZhic9TPl?usp=sharing)
+The notebooks in `notebooks/` walk through the experiments from the paper:
 
-<p align="center">
-<img src="assets/hadi_trevor.png" width="1000" >
-</p>
+- `generating_fake_images.ipynb` — generating example images.
+- `demo_simple_attack_img2img.ipynb` — image-to-image protection experiments.
+- `demo_simple_attack_inpainting.ipynb` — inpainting experiments using the simpler encoder-based approach.
+- `demo_complex_attack_inpainting.ipynb` — end-to-end diffusion attack experiments for inpainting.
 
-## Simple photo-guarding (Encoder Attack):
+Run the notebooks in order where one experiment depends on outputs produced by an earlier notebook. Check each notebook's cells for model downloads, GPU requirements, and expected input files.
 
-Now, we describe the simplest form of photo safeguarding that we implement. In particular, we implement a simple PGD attack on the image embedding part of the stable diffusion model. We have two demos demonstrating the efficacy of such photo safeguarding method. The goal of both is to cause the stable diffusion model to generate something that is either unrealistic, or unrelated to the original image.
+## Project layout
 
-### Photo-guarding against Image-to-Image pipelines
+```text
+photoguard/
+├── assets/       # Figures and demo images
+├── demo/         # Gradio interactive demo
+├── notebooks/    # Research and experiment notebooks
+├── LICENSE
+├── README.md
+└── requirements.txt
+```
 
-The first is the case where someone uses an image + prompt to modify the input image based on the prompt description.
+## Limitations and responsible use
 
-See [this notebook](notebooks/demo_simple_attack_img2img.ipynb)!
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1P9_Xkbb05d5ynuvucFO6TjXJoXLq_Vyg?usp=sharing)
+- PhotoGuard is an experimental research approach. It does not provide universal or permanent protection against image editing.
+- Do not treat a successful experiment as proof that an image is safe from manipulation.
+- Model updates, preprocessing, image transformations, and different editing pipelines can change the results.
+- Use the techniques for research, evaluation, and the protection of image owners. Do not use this project to interfere with legitimate creative work or access to content.
+- Do not upload private or sensitive images to services you do not trust.
 
-<p align="center">
-<img src="assets/simple_attack_img2img.png" width="1000" >
-</p>
+## Attribution and changes in this fork
 
-### Photo-guarding against Inpainting pipelines
+The underlying research, original implementation, and associated materials are credited to the authors and MadryLab. This fork is maintained by **Utkarsh Jadhav**. Changes made specifically in this fork are separate from the original upstream work; see the commit history for the exact changes.
 
-The second is the more interesting scenario where someone wants to edit parts of an existing image via inpainting. The generated images after immunization are clearly fake!
+If you build on the research, please cite the paper above and retain the applicable notices in the [MIT license](LICENSE).
 
-See [this notebook](notebooks/demo_simple_attack_inpainting.ipynb)!
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1q-p8_PWROVOAl6B07znev0W-Z9gKgoW2?usp=sharing)
+## Contributing
 
-<p align="center">
-<img src="assets/simple_attack_inpaint.png" width="1000" >
-</p>
+This is a personal research fork. Before proposing changes, please read [CONTRIBUTING.md](CONTRIBUTING.md). Keep experimental changes reproducible and clearly distinguish new work from the original implementation.
 
-## Complex photo-guarding (Diffusion attack)
+## License
 
-For more effective photo-guarding especially against image inpainting, we need to attack the stable diffusion model end-to-end. Now, the generated images after immunization are even more clearly fake than above!
-
-See [this notebook](notebooks/demo_complex_attack_inpainting.ipynb)!
-
-<p align="center">
-<img src="assets/complex_attack_inpaint.png" width="1000" >
-</p>
-
-That's it! Please let us know if you have any questions. And check our paper for details about each of these attacks.
+The project is distributed under the MIT License. The original MadryLab copyright notice is retained, and a separate notice covers modifications made in this fork. See [LICENSE](LICENSE) for the full terms.
